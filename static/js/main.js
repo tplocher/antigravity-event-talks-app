@@ -17,6 +17,7 @@ const retryBtn = document.getElementById('retry-btn');
 const clearFiltersBtn = document.getElementById('clear-filters-btn');
 const searchInput = document.getElementById('search-input');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
 
 // Tweet Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -29,6 +30,7 @@ const sendTweetBtn = document.getElementById('send-tweet-btn');
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     fetchReleaseNotes();
     setupEventListeners();
 });
@@ -38,6 +40,7 @@ function setupEventListeners() {
     // Action buttons
     refreshBtn.addEventListener('click', fetchReleaseNotes);
     exportCsvBtn.addEventListener('click', exportToCSV);
+    themeToggleBtn.addEventListener('click', toggleTheme);
     retryBtn.addEventListener('click', fetchReleaseNotes);
     
     // Clear filters
@@ -426,4 +429,40 @@ function exportToCSV() {
     URL.revokeObjectURL(url);
 
     showToast(`Successfully exported ${count} updates to CSV!`, 'success');
+}
+
+// Initialize theme state (dark/light mode)
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    
+    if (savedTheme === 'light' || (!savedTheme && systemPrefersLight)) {
+        document.body.classList.add('light-mode');
+        updateThemeIcons(true);
+    } else {
+        document.body.classList.remove('light-mode');
+        updateThemeIcons(false);
+    }
+}
+
+// Toggle page theme and persist choice in localStorage
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeIcons(isLight);
+    showToast(`${isLight ? 'Light' : 'Dark'} mode enabled.`, 'success');
+}
+
+// Swap sun and moon icons on toggle buttons
+function updateThemeIcons(isLight) {
+    const sunIcon = themeToggleBtn.querySelector('.icon-sun');
+    const moonIcon = themeToggleBtn.querySelector('.icon-moon');
+    
+    if (isLight) {
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+    } else {
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+    }
 }

@@ -902,3 +902,68 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* Light Mode Overrides */
+body.light-mode {
+    --bg-primary: #f1f5f9;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(15, 23, 42, 0.08);
+    --border-hover: rgba(59, 130, 246, 0.5);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+}
+
+body.light-mode .stat-card {
+    background-color: rgba(15, 23, 42, 0.02);
+}
+
+body.light-mode .stat-card:hover {
+    background-color: rgba(15, 23, 42, 0.04);
+}
+
+body.light-mode .filter-btn:hover {
+    background-color: rgba(15, 23, 42, 0.03);
+}
+
+body.light-mode .action-icon-btn:hover {
+    background-color: rgba(15, 23, 42, 0.04);
+}
+
+body.light-mode .timeline::before {
+    background: linear-gradient(180deg, var(--accent-blue) 0%, rgba(15, 23, 42, 0.08) 100%);
+}
+
+body.light-mode .timeline-dot {
+    background-color: var(--bg-primary);
+}
+
+body.light-mode .update-card:hover {
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .tweet-preview-card {
+    background-color: #ffffff;
+    border-color: #e1e8ed;
+    color: #0f172a;
+}
+
+body.light-mode #tweet-editor {
+    color: #0f172a;
+}
+
+body.light-mode .tweet-preview-footer {
+    border-top-color: #e1e8ed;
+}
+
+body.light-mode .tweet-user-details .tweet-handle {
+    color: #536471;
+}
+
+body.light-mode .tweet-preview-footer .tweet-char-counter {
+    color: #536471;
+}
+
