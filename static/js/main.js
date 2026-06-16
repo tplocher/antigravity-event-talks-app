@@ -12,6 +12,7 @@ const errorState = document.getElementById('error-state');
 const errorMessage = document.getElementById('error-message');
 const emptyState = document.getElementById('empty-state');
 const refreshBtn = document.getElementById('refresh-btn');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 const retryBtn = document.getElementById('retry-btn');
 const clearFiltersBtn = document.getElementById('clear-filters-btn');
 const searchInput = document.getElementById('search-input');
@@ -34,8 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup Listeners
 function setupEventListeners() {
-    // Refresh buttons
+    // Action buttons
     refreshBtn.addEventListener('click', fetchReleaseNotes);
+    exportCsvBtn.addEventListener('click', exportToCSV);
     retryBtn.addEventListener('click', fetchReleaseNotes);
     
     // Clear filters
@@ -224,10 +226,10 @@ function renderTimeline() {
                     <div class="update-body">${update.html}</div>
                     <div class="card-actions">
                         <button class="action-icon-btn btn-copy-link" data-link="${entry.link || ''}">
-                            <i class="fa-solid fa-link"></i> Link
+                            <i class="fa-solid fa-link"></i> Copy Link
                         </button>
-                        <button class="action-icon-btn btn-copy-text" data-id="${update.id}">
-                            <i class="fa-solid fa-copy"></i> Copy
+                        <button class="action-icon-btn btn-copy-clipboard" data-id="${update.id}">
+                            <i class="fa-solid fa-clipboard"></i> Copy to Clipboard
                         </button>
                         <button class="action-icon-btn btn-share-tweet" data-id="${update.id}">
                             <i class="fa-brands fa-x-twitter"></i> Tweet
@@ -241,8 +243,9 @@ function renderTimeline() {
                     copyToClipboard(link || window.location.href, 'Link copied to clipboard!');
                 });
                 
-                card.querySelector('.btn-copy-text').addEventListener('click', () => {
-                    copyToClipboard(update.text, 'Update text copied to clipboard!');
+                card.querySelector('.btn-copy-clipboard').addEventListener('click', () => {
+                    const fullFormattedNote = `BigQuery [${update.type}] (${entry.date}): ${update.text}\n\nRead more at: ${entry.link || 'https://cloud.google.com/bigquery'}`;
+                    copyToClipboard(fullFormattedNote, 'Formatted release note copied to clipboard!');
                 });
                 
                 card.querySelector('.btn-share-tweet').addEventListener('click', () => {
@@ -360,4 +363,67 @@ function showToast(message, type = 'success') {
             }
         }, 300);
     }, 3200);
+}
+
+// Export active/filtered release notes to CSV file
+function exportToCSV() {
+    if (!releaseNotes || releaseNotes.length === 0) {
+        showToast('No release notes available to export.', 'error');
+        return;
+    }
+
+    const csvRows = [];
+    
+    // CSV Header row
+    csvRows.push(['Date', 'Type', 'Description', 'Link'].map(header => `"${header.replace(/"/g, '""')}"`).join(','));
+
+    let count = 0;
+    
+    releaseNotes.forEach(entry => {
+        entry.updates.forEach(update => {
+            // Apply current filters dynamically to export exactly what the user sees
+            const categoryMatch = currentFilter === 'all' || 
+                update.type.toLowerCase() === currentFilter.toLowerCase();
+            const searchMatch = !searchQuery || 
+                update.type.toLowerCase().includes(searchQuery) ||
+                update.text.toLowerCase().includes(searchQuery) ||
+                entry.date.toLowerCase().includes(searchQuery);
+
+            if (categoryMatch && searchMatch) {
+                count++;
+                const row = [
+                    entry.date,
+                    update.type,
+                    update.text,
+                    entry.link || 'https://cloud.google.com/bigquery'
+                ];
+                // Escape double quotes in CSV fields
+                const escapedRow = row.map(val => `"${String(val).replace(/"/g, '""')}"`);
+                csvRows.push(escapedRow.join(','));
+            }
+        });
+    });
+
+    if (count === 0) {
+        showToast('No matching records found to export.', 'error');
+        return;
+    }
+
+    // Create a UTF-8 CSV blob
+    const csvContent = "\uFEFF" + csvRows.join("\r\n"); // \uFEFF is the UTF-8 Byte Order Mark (BOM) for Excel
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element to trigger the download
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `bigquery_release_notes_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast(`Successfully exported ${count} updates to CSV!`, 'success');
 }
