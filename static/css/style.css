@@ -649,7 +649,7 @@ body {
 /* Toast System */
 .toast-container {
     position: fixed;
-    bottom: 2rem;
+    bottom: 6rem;
     right: 2rem;
     display: flex;
     flex-direction: column;
@@ -976,5 +976,37 @@ body.light-mode .update-body a {
 body.light-mode .update-body a:hover {
     color: #1e40af;
     border-bottom-color: #1e40af;
+}
+
+/* Floating Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2.5rem;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--accent-glow);
+    border: none;
+    color: #ffffff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+    z-index: 99;
+    transition: var(--transition-bounce);
+}
+
+.back-to-top:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55);
+}
+
+.back-to-top.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px) scale(0.8);
 }
 

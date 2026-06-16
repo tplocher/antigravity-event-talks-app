@@ -18,6 +18,7 @@ const clearFiltersBtn = document.getElementById('clear-filters-btn');
 const searchInput = document.getElementById('search-input');
 const filterBtns = document.querySelectorAll('.filter-btn');
 const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const backToTopBtn = document.getElementById('back-to-top-btn');
 
 // Tweet Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -95,6 +96,31 @@ function setupEventListeners() {
             tweetModal.classList.remove('active');
             selectedUpdate = null;
         }
+    });
+    
+    // Close modal on Escape key press
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && tweetModal.classList.contains('active')) {
+            tweetModal.classList.remove('active');
+            selectedUpdate = null;
+        }
+    });
+    
+    // Scroll event for Back to Top button visibility
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            backToTopBtn.classList.remove('hidden');
+        } else {
+            backToTopBtn.classList.add('hidden');
+        }
+    });
+    
+    // Click event to scroll back to top smoothly
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     });
 }
 
