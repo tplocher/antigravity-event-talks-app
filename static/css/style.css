@@ -506,7 +506,7 @@ body {
 
 /* Card Content Styling */
 .update-body {
-    color: #e2e8f0;
+    color: var(--text-primary);
     margin-bottom: 1.25rem;
     font-size: 0.95rem;
     word-break: break-word;
@@ -965,5 +965,16 @@ body.light-mode .tweet-user-details .tweet-handle {
 
 body.light-mode .tweet-preview-footer .tweet-char-counter {
     color: #536471;
+}
+
+/* Light mode specific links readability fixes */
+body.light-mode .update-body a {
+    color: #1d4ed8;
+    border-bottom-color: rgba(29, 78, 216, 0.4);
+}
+
+body.light-mode .update-body a:hover {
+    color: #1e40af;
+    border-bottom-color: #1e40af;
 }
 
